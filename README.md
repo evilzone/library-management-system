@@ -1,7 +1,7 @@
 # library-management-system
 spring boot application for library management
 
-======================================================================================================================
+========================================================================
 
 As a User
 I can sign up either as LIBRARIAN and MEMBER using username and password
@@ -28,7 +28,7 @@ I can login using username/password and get JWT access token
 <img width="1439" alt="Screenshot 2023-05-09 at 23 28 42" src="https://github.com/evilzone/library-management-system/assets/1716829/d3657995-7a97-41a1-a346-800c18e7afea">
 
 
-======================================================================================================================
+====================================================================
 
 As a Librarian
 
@@ -45,7 +45,7 @@ I can add, update, view, and remove Member from the system
 - login with Librarian account to proceed to page to add update and remove members from the system 
 
 
-======================================================================================================================
+========================================================================
 As a Member
 
 I can view, borrow, and return available Books
