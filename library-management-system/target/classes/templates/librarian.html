@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>librarian</title>
+</head>
+<body>
+<h1>Book Management</h1>
+<input type="radio" name="book" id="add" value="add" onchange="showForm('addBook')"/>
+<label for="add">Add Book</label> <br/>
+<input type="radio" id="update" name="book" value="update" onchange="showForm('updateBook')"/>
+<label for="update">Update Book</label> <br/>
+<input type="radio" id="remove" name="book" value="remove"  onchange="showForm('removeBook')"/>
+<label for="remove">Remove Book</label> <br/>
+
+Book List : <p id="booklist"></p>
+<br/>
+<p id="message"></p>
+<br/>
+<form id="addBook" style="display:none;">
+    <label for="bookName">bookname :</label> <br/>
+    <input type="text" name="bookName" id="bookName"> <br/>
+
+    <label for="author">author :</label> <br/>
+    <input type="text" name="author" id="author"> <br/>
+
+    <label for="addDate">publish date :</label> <br/>
+    <input type="date" name="publishDate" id="addDate"> <br/>
+    <button type="button" onclick="addBook()">Add</button>
+</form>
+<form id="updateBook" style="display:none;">
+    <label for="bookId">Book Id :</label> <br/>
+    <input type="text" required name="bookId" id="bookId" /> <br/>
+
+    <label for="bookName">bookname :</label> <br/>
+    <input type="text" name="bookName" id="book"> <br/>
+
+    <label for="author">author :</label> <br/>
+    <input type="text" name="author" id="authorName"> <br/>
+
+    <label for="updateDate">publish date :</label> <br/>
+    <input type="date" name="publishDate" id="updateDate"> <br/>
+    <button type="button" onclick="updateBook()">Update</button>
+</form>
+<form id="removeBook" style="display:none;">
+    <label for="bookId">Book Id :</label> <br/>
+    <input type="text" name="bookId" id="id"> <br/>
+    <button type="button" onclick="removeBook()">Delete</button>
+</form>
+<h1>Member Management</h1>
+<input type="radio" name="Member" id="add1" value="add1" onchange="showForm('addMember')"/>
+<label for="add">Add Member</label> <br/>
+<input type="radio" id="update1" name="Member" value="update1" onchange="showForm('updateMember')"/>
+<label for="update">Update Member</label> <br/>
+<input type="radio" id="remove1" name="Member" value="remove1"  onchange="showForm('removeMember')"/>
+<label for="remove">Remove Member</label> <br/>
+
+<p id="message1"></p>
+<br/>
+<form id="addMember" style="display:none;">
+    <label for="firstName">First Name :</label> <br/>
+    <input type="text" name="firstName" id="firstName"> <br/>
+
+    <label for="lastName">Last Name :</label> <br/>
+    <input type="text" name="lastName" id="lastName"> <br/>
+
+    <label for="email">Email :</label> <br/>
+    <input type="text" name="email" id="email"> <br/>
+
+    <label for="password">Password :</label> <br/>
+    <input type="password" name="password" id="password"> <br/>
+
+    <button type="button" onclick="addMember()">Add</button>
+</form>
+<form id="updateMember" style="display:none;">
+    <label for="id">Member Id :</label> <br/>
+    <input type="text" required name="id" id="memberId" /> <br/>
+
+    <label for="firstName">First Name :</label> <br/>
+    <input type="text" name="firstName" id="firstName1"> <br/>
+
+    <label for="lastName">Last Name :</label> <br/>
+    <input type="text" name="lastName" id="lastName1"> <br/>
+
+    <button type="button" onclick="updateMember()">Update</button>
+</form>
+<form id="removeMember" style="display:none;">
+    <label for="memberId">Member Id :</label> <br/>
+    <input type="text" name="memberId" id="memberId1"> <br/>
+    <button type="button" onclick="removeMember()">Delete</button>
+</form>
+<script>
+    function showMessage(id, message) {
+        document.getElementById(id).innerHTML = message;
+        setTimeout(() => {
+             document.getElementById(id).innerHTML = "";
+        }, 5000);
+    }
+
+    function showForm(formId) {
+        if (document.getElementById("addBook")) {
+            document.getElementById("addBook").style.display = "none";
+        }
+        if (document.getElementById("updateBook")) {
+            document.getElementById("updateBook").style.display = "none";
+        }
+        if (document.getElementById("removeBook")) {
+            document.getElementById("removeBook").style.display = "none";
+        }
+        if (document.getElementById("addMember")) {
+            document.getElementById("addMember").style.display = "none";
+        }
+        if (document.getElementById("updateMember")) {
+            document.getElementById("updateMember").style.display = "none";
+        }
+        if (document.getElementById("removeMember")) {
+            document.getElementById("removeMember").style.display = "none";
+        }
+        let form = document.getElementById(formId);
+        if (form) {
+            form.style.display="block";
+        }
+    };
+    function getAllBooks() {
+        console.log("book list");
+
+        const url = '/api/v1/book';
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            document.getElementById("booklist").innerHTML = data?.length
+                ?   JSON.stringify(data)
+                :   "No Data Found. Add new books.";
+        })
+        .catch(function(err) {
+            document.getElementById("booklist").innerHTML = "No Data Found. Add new books.";
+            console.log(err);
+        });
+    };
+    getAllBooks();
+    function addBook() {
+          console.log("add book");
+
+        const url = '/api/v1/book';
+        const data = {
+           bookName: document.getElementById("bookName").value,
+           author: document.getElementById("author").value,
+           publishDate: document.getElementById("addDate").value
+        };
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message", "Book Added : " + JSON.stringify(data));
+            getAllBooks();
+            document.getElementById("bookName").value="";
+            document.getElementById("author").value="";
+            document.getElementById("addDate").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    };
+    function updateBook() {
+          console.log("update book");
+
+        const url = '/api/v1/book/' + document.getElementById("bookId").value;
+        const data = {
+           bookName: document.getElementById("book").value,
+           author: document.getElementById("authorName").value,
+           publishDate: document.getElementById("updateDate").value
+        };
+        fetch(url, {
+            method: "PUT",
+            body: JSON.stringify(data),
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message", "Book updated successfully  : " + JSON.stringify(data));
+            getAllBooks();
+            document.getElementById("bookId").value="";
+            document.getElementById("book").value="";
+            document.getElementById("authorName").value="";
+            document.getElementById("updateDate").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+            showMessage("message", "Book Not Found!");
+        });
+    };
+    function removeBook() {
+          console.log("remove book");
+
+        const url = '/api/v1/book/' + document.getElementById("id").value;
+        fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message", "Book deleted successfully : " + JSON.stringify(data));
+            getAllBooks();
+            document.getElementById("id").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+            showMessage("message", "Book not found!");
+        });
+    };
+    function getAllMembers() {
+        console.log("member list");
+
+        const url = '/api/v1/user';
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            document.getElementById("memberlist").innerHTML = data?.length
+                ?   JSON.stringify(data)
+                :   "No Data Found. Add new members.";
+        })
+        .catch(function(err) {
+            document.getElementById("memberlist").innerHTML = "No Data Found. Add new members.";
+            console.log(err);
+        });
+    };
+<!--    getAllMembers();-->
+    function addMember() {
+          console.log("add member");
+
+        const url = '/api/v1/user';
+        const data = {
+           firstName: document.getElementById("firstName").value,
+           lastName: document.getElementById("lastName").value,
+           email: document.getElementById("email").value,
+           password: document.getElementById("password").value,
+           role: "MEMBER"
+        };
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message1", "Member Added Successfully : " + JSON.stringify(data));
+<!--    getAllMembers();-->
+            document.getElementById("firstName").value="";
+            document.getElementById("lastName").value="";
+            document.getElementById("email").value="";
+            document.getElementById("password").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    };
+    function updateMember() {
+          console.log("update member");
+
+        const url = '/api/v1/user/' + document.getElementById("memberId").value;
+        const data = {
+           firstName: document.getElementById("firstName1").value,
+           lastName: document.getElementById("lastName1").value
+        };
+        fetch(url, {
+            method: "PUT",
+            body: JSON.stringify(data),
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message1", "Member updated successfully  : " + JSON.stringify(data));
+<!--    getAllMembers();-->
+            document.getElementById("memberId").value="";
+            document.getElementById("firstName").value="";
+            document.getElementById("lastName").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+            showMessage("message1", "Member Not Found!");
+        });
+    };
+
+    function removeMember() {
+          console.log("remove Member");
+
+        const url = '/api/v1/user/' + document.getElementById("memberId1").value;
+        fetch(url, {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message1", "Member deleted successfully : " + JSON.stringify(data));
+<!--    getAllMembers();-->
+            document.getElementById("memberId1").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+            showMessage("message1", "Member not found!");
+        });
+    };
+</script>
+</body>
+</html>

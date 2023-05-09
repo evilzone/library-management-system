@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+</head>
+<body>
+<h1>user login</h1>
+<form>
+    <label for="username">username :</label> <br/>
+    <input type="text" id="username" name="email"> <br/>
+
+    <label for="password">password :</label> <br/>
+    <input type="text" id="password" name="password"> <br/>
+    <button type="button"  onclick="redirectToURL()">Submit</button>
+</form>
+<script>
+    function redirectToURL() {
+          console.log("redirecting");
+
+        const url = '/api/v1/user/login?email=' + document.getElementById( "username")?.value + "&password=" +
+        document.getElementById("password")?.value;
+
+        fetch(url)
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            sessionStorage.setItem("token", data.token);
+            if (data.userType === "LIBRARIAN") {
+                window.location.href = "/librarian";
+            }
+            else if (data.userType === "MEMBER") {
+                window.location.href = "/member";
+            }
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    }
+</script>
+</body>
+</html>

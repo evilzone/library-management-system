@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+
+<h1>Library Management System</h1>
+<form action="/api/v1/user/register" method="post">
+<label for="firstname">firstname :</label> <br/>
+<input type="text" name="firstName"> <br/>
+
+<label for="lastname">lastname :</label> <br/>
+<input type="text" name="lastName"> <br/>
+
+<label for="username">username :</label> <br/>
+<input type="text" name="email"> <br/>
+
+<label for="password">password :</label> <br/>
+<input type="text" name="password"> <br/>
+
+<label for="user">user :</label> <br/>
+<select name="user">
+    <option value="LIBRARIAN">librarian</option>
+    <option value="MEMBER">member</option>
+</select>
+<button type="submit">Submit</button>
+</form>
+</body>
+</html>

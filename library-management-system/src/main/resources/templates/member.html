@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member</title>
+</head>
+<body>
+<h1>Book Management</h1>
+<input type="radio" name="book" id="view" value="view" onchange="showForm('viewBooks')"/>
+<label for="view">View Books</label> <br/>
+<input type="radio" id="borrow" name="book" value="borrow" onchange="showForm('borrowBook')"/>
+<label for="borrow">Borrow Book</label> <br/>
+<input type="radio" id="return" name="book" value="return"  onchange="showForm('returnBook')"/>
+<label for="return">Return Book</label> <br/>
+
+<p id="message"></p>
+<br/>
+<form id="viewBooks" style="display:none;">
+    Book List : <p id="booklist"></p>
+</form>
+<form id="borrowBook" style="display:none;">
+    <label for="bookId">Book Id :</label> <br/>
+    <input type="text" required name="bookId" id="bookId" /> <br/>
+
+    <button type="button" onclick="borrowBook()">Borrow</button>
+</form>
+<form id="returnBook" style="display:none;">
+    <label for="bookId1">Book Id :</label> <br/>
+    <input type="text" name="bookId1" id="bookId1"> <br/>
+
+    <button type="button" onclick="returnBook()">Return</button>
+</form>
+<script>
+function showMessage(id, message) {
+    document.getElementById(id).innerHTML = message;
+    setTimeout(() => {
+         document.getElementById(id).innerHTML = "";
+    }, 5000);
+}
+    function showForm(formId) {
+        if (document.getElementById("viewBooks")) {
+            document.getElementById("viewBooks").style.display = "none";
+        }
+        if (document.getElementById("borrowBook")) {
+            document.getElementById("borrowBook").style.display = "none";
+        }
+        if (document.getElementById("returnBook")) {
+            document.getElementById("returnBook").style.display = "none";
+        }
+        let form = document.getElementById(formId);
+        if (form) {
+            form.style.display="block";
+            if (formId === "viewBooks")
+                getAllBooks();
+        }
+    };
+    function getAllBooks() {
+        console.log("book list");
+
+        const url = '/api/v1/book/available';
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            document.getElementById("booklist").innerHTML = data?.length
+                ?   JSON.stringify(data)
+                :   "No Data Found.";
+        })
+        .catch(function(err) {
+            document.getElementById("booklist").innerHTML = "No Data Found.";
+            console.log(err);
+        });
+    };
+    function borrowBook() {
+          console.log("update book");
+
+        const url = '/api/v1/book/borrow/' + document.getElementById("bookId").value;
+        fetch(url, {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message", "Book borrowed successfully  : " + JSON.stringify(data));
+            getAllBooks();
+            document.getElementById("bookId").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+            showMessage("message", "Book Not Found!");
+        });
+    };
+    function returnBook() {
+          console.log("return book");
+
+        const url = '/api/v1/book/return/' + document.getElementById("bookId1").value;
+        fetch(url, {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem("token"),
+                "Content-Type": "application/json",
+                "Accept": "*/*"
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log("response",data);
+            showMessage("message", "Book returned successfully : " + JSON.stringify(data));
+            getAllBooks();
+            document.getElementById("bookId1").value="";
+        })
+        .catch(function(err) {
+          console.log(err);
+            showMessage("message", "Book not found!");
+        });
+    };
+</script>
+</body>
+</html>
